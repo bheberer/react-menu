@@ -4,7 +4,7 @@ import { useMachine } from '@xstate/react';
 
 const menuMachine = Machine({
   id: 'menu',
-  initial: 'idle',
+  initial: 'closed',
   states: {
     closed: {
       on: { CLICK: 'open' }
@@ -17,7 +17,7 @@ const menuMachine = Machine({
 
 const MenuContext = React.createContext();
 
-function Menu({ children }) {
+export function Menu({ children }) {
   const [current, send] = useMachine(menuMachine);
 
   return (
@@ -27,18 +27,26 @@ function Menu({ children }) {
   );
 }
 
-function MenuButton({ children }) {
+export function MenuButton({ children }) {
   const { send } = useContext(MenuContext);
 
   return <button onClick={() => send('CLICK')}>{children}</button>;
 }
 
-function MenuPopover({ children }) {
+export function MenuPopover({ children }) {
   const { current } = useContext(MenuContext);
 
   return current.matches('open') && <div>{children}</div>;
 }
 
-function MenuItems({ children }) {
+export function MenuItems({ children }) {
   return <div>{children}</div>;
+}
+
+export function MenuItem({ children }) {
+  return <button>{children}</button>;
+}
+
+export function MenuLink({ children, href }) {
+  return <a href={href}>{children}</a>;
 }

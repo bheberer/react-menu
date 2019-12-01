@@ -1,5 +1,12 @@
 import React from 'react';
 
+import { Menu, MenuButton, MenuPopover } from './Menu';
+
 export default function App() {
-  return <div>Hello World</div>;
+  return (
+    <Menu>
+      <MenuButton>Click Me</MenuButton>
+      <MenuPopover>Oh Hello</MenuPopover>
+    </Menu>
+  );
 }

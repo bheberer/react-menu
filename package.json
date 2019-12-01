@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/bheberer/react-menu#readme",
   "dependencies": {
+    "@xstate/react": "^0.8.1",
     "babel-eslint": "^10.0.3",
     "eslint-config-prettier": "^6.7.0",
     "prop-types": "^15.7.2",
