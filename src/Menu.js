@@ -36,7 +36,9 @@ function MenuButton({ children }) {
 function MenuPopover({ children }) {
   const { current } = useContext(MenuContext);
 
-  return;
+  return current.matches('open') && <div>{children}</div>;
 }
 
-function MenuItem() {}
+function MenuItems({ children }) {
+  return <div>{children}</div>;
+}
