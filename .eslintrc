@@ -1,0 +1,13 @@
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "env": {
+    "browser": true
+  },
+  "extends": ["airbnb/hooks"],
+  "rules": {
+    "react/prop-types": 0
+  }
+}
