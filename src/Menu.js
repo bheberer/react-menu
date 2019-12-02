@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useLayoutEffect } from 'react';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 
@@ -33,7 +33,7 @@ export function MenuButton({ children }) {
   const menuButtonRef = useRef();
 
   useEffect(() => {
-    refContainer.current.push(menuButtonRef);
+    refContainer.current[0] = menuButtonRef;
   }, [refContainer]);
 
   const handleKeyDown = e => {
@@ -41,9 +41,11 @@ export function MenuButton({ children }) {
       send('TOGGLE');
     }
     if (e.key === 'ArrowDown' && current.matches('open')) {
+      console.log(refContainer);
       refContainer.current[1].current.focus();
     }
     if (e.key === 'Escape' && current.matches('open')) {
+      refContainer.current = refContainer.current.slice(0, 1);
       send('TOGGLE');
     }
   };
@@ -69,15 +71,14 @@ export function MenuItems({ children }) {
   return <div>{children}</div>;
 }
 
-export function MenuItem({ children, onSelect }) {
+function useMenuItem() {
   const { current, send, refContainer } = useContext(MenuContext);
   const itemRef = useRef();
   const indexRef = useRef();
-  console.log(refContainer);
 
-  useEffect(() => {
-    refContainer.current.push(itemRef);
-    indexRef.current = refContainer.current.length - 1;
+  useLayoutEffect(() => {
+    indexRef.current = refContainer.current.length;
+    refContainer.current[indexRef.current] = itemRef;
   }, [refContainer]);
 
   useEffect(() => {
@@ -101,45 +102,32 @@ export function MenuItem({ children, onSelect }) {
     }
     if (e.key === 'Escape') {
       refContainer.current[0].current.focus();
+      refContainer.current = refContainer.current.slice(0, 1);
       send('TOGGLE');
     }
   };
 
-  const select = () => {
+  const handleSelect = () => {
     onSelect();
+    refContainer.current = refContainer.current.slice(0, 1);
     send('TOGGLE');
   };
 
+  return { itemRef, handleKeyDown, handleSelect };
+}
+
+export function MenuItem({ children, onSelect }) {
+  const { handleSelect, itemRef, handleKeyDown } = useMenuItem();
+
   return (
-    <button onClick={select} ref={itemRef} onKeyDown={handleKeyDown}>
+    <button onClick={handleSelect} ref={itemRef} onKeyDown={handleKeyDown}>
       {children}
     </button>
   );
 }
 
 export function MenuLink({ children, href }) {
-  const { refContainer } = useContext(MenuContext);
-  const itemRef = useRef();
-  const indexRef = useRef();
-  useEffect(() => {
-    refContainer.current.push(itemRef);
-    indexRef.current = refContainer.current.length - 1;
-  }, [refContainer]);
-
-  const handleKeyDown = e => {
-    if (e.key === 'ArrowDown') {
-      if (indexRef.current !== refContainer.current.length - 1) {
-        refContainer.current[indexRef.current + 1].current.focus();
-      }
-    }
-    if (e.key === 'ArrowUp') {
-      refContainer.current[indexRef.current - 1].current.focus();
-    }
-    if (e.key === 'Escape') {
-      refContainer.current[0].current.focus();
-      send('TOGGLE');
-    }
-  };
+  const { itemRef, handleKeyDown } = useMenuItem();
 
   return (
     <a href={href} ref={itemRef} onKeyDown={handleKeyDown}>
